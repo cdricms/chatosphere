@@ -1,0 +1,25 @@
+.message {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  max-width: 40em;
+  background-color: blue;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  color: white;
+}
+
+.content {
+  overflow-wrap: anywhere;
+}
+
+.nickname {
+  font-style: italic;
+  align-self: flex-end;
+  width: fit-content;
+}
+
+.sent_date {
+  font-size: 0.7em;
+  font-style: italic;
+}

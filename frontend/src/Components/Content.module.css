@@ -1,0 +1,22 @@
+.messages {
+  flex: 1 auto;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+  gap: 0.5em;
+  padding: 1em;
+}
+
+.input_box {
+  display: flex;
+  padding: 1em;
+  background-color: cyan;
+  gap: 1em;
+}
+
+.current_message {
+  flex: 1 auto;
+  max-height: 50em;
+  min-height: 2em;
+  resize: none;
+}

@@ -1,0 +1,28 @@
+.main {
+  display: grid;
+  height: 100vh;
+  grid-template-areas:
+    'cl nav nav'
+    'cl ct ct'
+    'cl ct ct';
+  grid-template-columns: 0.5fr 1fr 1fr;
+  grid-template-rows: 0.2fr 1fr 1fr;
+}
+
+.contact-info {
+  background: blue;
+  grid-area: nav;
+}
+
+.contacts {
+  background: green;
+  grid-area: cl;
+  min-width: 20vw;
+}
+
+.content {
+  background: red;
+  grid-area: ct;
+  display: flex;
+  flex-direction: column;
+}
