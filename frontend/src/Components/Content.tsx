@@ -19,6 +19,20 @@ const Content: Component<{ class: string }> = ({ class: className }) => {
           class={styles.current_message}
           value={currentConv().currentMessage}
           ref={msgInputRef}
+          onkeypress={(k) => {
+            switch (k.key) {
+              case 'Enter':
+                if (k.shiftKey) {
+                  break
+                }
+                k.preventDefault()
+                sendMessage()
+                k.currentTarget.style.height = 'auto'
+                break
+              default:
+                break
+            }
+          }}
           oninput={(e) => {
             setCurrentMessage(e.currentTarget.value)
             e.currentTarget.style.height = 'auto'
@@ -26,6 +40,7 @@ const Content: Component<{ class: string }> = ({ class: className }) => {
           }}
         />
         <button
+          class={styles.send_btn}
           type='button'
           onclick={() => {
             sendMessage()

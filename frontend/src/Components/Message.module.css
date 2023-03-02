@@ -10,7 +10,8 @@
 }
 
 .content {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  white-space: break-spaces;
 }
 
 .nickname {
