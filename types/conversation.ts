@@ -25,6 +25,7 @@ export interface IMessage {
   read: boolean
   delivered: boolean
   replies: string[]
+  to: string
   reactions: TReactionEmojis[]
 }
 
