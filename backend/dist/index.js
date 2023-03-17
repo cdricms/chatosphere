@@ -1,13 +1,18 @@
 import express from 'express';
 import http from 'http';
+import path from "path";
+import { fileURLToPath } from "url";
 import { Server } from 'socket.io';
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(path.dirname(__filename));
 const clients = new Map();
-app.get('/', (_, res) => {
-    res.send('<h1>Hello world</h1>');
-});
+app.use(express.static('client'));
+// app.get('/', (_, res) => {
+//   res.sendFile(__dirname+ "/client/index.html")
+// })
 io.on('connection', (socket) => {
     console.log(`[ID]: ${socket.id}`);
     socket.emit('healthCheck', socket.id);
