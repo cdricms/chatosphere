@@ -1,3 +1,8 @@
+.message_wrapper[data-me="true"] {
+  width: fit-content;
+  align-self: flex-end;
+}
+
 .message {
   display: flex;
   flex-direction: column;

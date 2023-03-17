@@ -1,6 +1,6 @@
 import { lazy, createEffect, onMount } from 'solid-js'
 import { Routes, Route, useNavigate } from '@solidjs/router'
-import { authenticate, nickname, setNickname, setSocket } from './store'
+import { authenticate, handle, setHandle, setSocket } from './store'
 import io from 'socket.io-client'
 
 const Register = lazy(() => import('./Register'))
@@ -10,20 +10,20 @@ const R = () => {
   const navigate = useNavigate()
 
   onMount(() => {
-    const _nickname = localStorage.getItem('nickname')
-    if (_nickname) {
-      setNickname(_nickname)
+    const handle = localStorage.getItem('handle')
+    if (handle) {
+      setHandle(handle)
       authenticate()
     }
   })
 
   createEffect(() => {
-    console.log(nickname())
-    if (nickname().length < 1) {
+    console.log(handle())
+    if (handle().length < 1) {
       navigate('/register')
     } else {
       setSocket(
-        io('', {
+        io(':8080', {
           transports: ['websocket'],
           reconnection: true,
         })

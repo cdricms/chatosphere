@@ -1,11 +1,12 @@
 import { Component } from 'solid-js'
-import { IMessage } from '../types/conversation'
+import { IMessage } from 'types/conversation'
+import { handle } from '../store'
 
 import styles from './Message.module.css'
 
 const Message: Component<{ message: IMessage }> = ({ message }) => {
   return (
-    <div>
+    <div class={styles.message_wrapper} data-me={message.sender.handle === handle()}>
       <div class={styles.message}>
         <span class={styles.nickname}>{message.sender.nickname}</span>
         <div class={styles.content}>{message.content}</div>

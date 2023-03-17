@@ -12,7 +12,7 @@ export type TReactionEmojis =
   | '💔'
 
 export interface ISender {
-  userID: string
+  handle: string
   nickname: string
   profilPicture: string
 }
