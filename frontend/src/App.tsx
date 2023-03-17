@@ -1,7 +1,10 @@
 import { Component } from 'solid-js'
+// import io from "socket.io-client"
 
 import styles from './App.module.css'
 import Content from './Components/Content'
+
+// const socket = io();
 
 const App: Component = () => {
   return (
