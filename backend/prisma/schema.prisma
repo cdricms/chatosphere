@@ -10,24 +10,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model UserOnRelations {
-  Relation       User   @relation(fields: [relationHandle], references: [handle])
-  relationHandle String
+model UserContactRequest {
+  contact       User   @relation("contactReceived", fields: [contactHandle], references: [handle])
+  contactHandle String
 
-  @@id([relationHandle])
+  user       User   @relation("contactSent", fields: [userHandle], references: [handle])
+  userHandle String
+
+  @@id([contactHandle, userHandle])
 }
 
-model PendingRelations {
-  PendingRelation User @relation(fields: [pendingHandle], references: [handle])
-  pendingHandle String
+// model UserContact {
+//   contact       User   @relation("contact", fields: [contactHandle], references: [handle])
+//   contactHandle String
 
-  @@id([pendingHandle])
-}
+//   user       User   @relation("user", fields: [userHandle], references: [handle])
+//   userHandle String
+
+//   @@id([userHandle])
+// }
 
 model User {
-  handle          String            @id @unique
-  nickname        String
-  profilePicture  String
-  UserOnRelations UserOnRelations[]
-  PendingRelations PendingRelations[]
+  handle                  String               @id @unique
+  nickname                String
+  profilePicture          String
+  contactRequestsSent     UserContactRequest[] @relation("contactSent")
+  contactRequestsReceived UserContactRequest[] @relation("contactReceived")
+  contacts                User[]               @relation("contacts")
+  contactsRelations       User[]               @relation("contacts")
 }
