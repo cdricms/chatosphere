@@ -136,14 +136,18 @@ const App: Component = () => {
             Add
           </button>
         </div>
-        <select
-          value={tab()}
-          onInput={(e) => setTab(e.currentTarget.value as unknown as any)}
-        >
+        <div>
           <For each={Object.keys(options)}>
-            {(c) => <option value={c}>{c}</option>}
+            {(c) => (
+              <button
+                onClick={(e) => setTab(e.currentTarget.value as any)}
+                value={c}
+              >
+                {c}
+              </button>
+            )}
           </For>
-        </select>
+        </div>
         <Dynamic component={options[tab()]} />
       </section>
       <Content class={styles.content} />

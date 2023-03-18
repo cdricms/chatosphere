@@ -14,6 +14,15 @@ export const [contacts, _setContacts] = createSignal<ISender[]>([]);
 
 export const [socket, setSocket] = createSignal<ReturnType<typeof io>>();
 
+const createEmptyConversation = (handle: string) => {
+  if (!conversations()[handle]) {
+    setConversations((prev) => ({
+      ...prev,
+      [handle]: { to: handle, messages: [], currentMessage: "" },
+    }));
+  }
+};
+
 export const authenticate = () => {
   socket()?.emit("authenticate", { handle: handle(), nickname: nickname() });
 };
@@ -36,10 +45,11 @@ export const setNickname = (_nickname: string) => {
   localStorage.setItem("nickname", nickname());
 };
 
-export const [currentConv, setCurrentConv] = createSignal<IConv>({
-  currentMessage: "",
-  messages: [],
-});
+export const currentConv = () => to();
+
+export const [conversations, setConversations] = createSignal<{
+  [handle: string]: IConv;
+}>({});
 
 export const addContact = (contact: string) => {
   socket()?.emit("sendContactRequest", handle(), contact);
@@ -101,22 +111,33 @@ export const deleteContact = (contact: string) => {
 };
 
 export const setCurrentMessage = (input: string) => {
-  setCurrentConv((prev) => ({ ...prev, currentMessage: input }));
+  setConversations((prev) => ({
+    ...prev,
+    [currentConv()]: {
+      currentMessage: input,
+      to: currentConv(),
+      messages: prev[currentConv()].messages,
+    },
+  }));
 };
 
-const setNewMessage = (msg: IMessage) => {
+const setNewMessage = (to: string, msg: IMessage) => {
   if (msg.content.length > 0) {
-    setCurrentConv((prev) => ({
+    createEmptyConversation(to);
+    setConversations((prev) => ({
       ...prev,
-      messages: [msg, ...prev.messages],
+      [to]: {
+        ...prev[to],
+        messages: [msg, ...prev[to].messages],
+      },
     }));
   }
 };
 
 export const sendMessage = () => {
-  setNewMessage({
+  setNewMessage(to(), {
     sender: { handle: handle(), nickname: nickname(), profilPicture: "" },
-    content: currentConv().currentMessage,
+    content: conversations()[currentConv()].currentMessage,
     sent: Date.now(),
     read: false,
     delivered: false,
@@ -126,7 +147,7 @@ export const sendMessage = () => {
     messageID: createUniqueId(),
   });
   setCurrentMessage("");
-  socket()?.emit("sendMessage", currentConv().messages[0]);
+  socket()?.emit("sendMessage", conversations()[currentConv()].messages[0]);
   console.log(currentConv());
 };
 
@@ -134,8 +155,7 @@ createEffect(() => {
   socket()?.on("healthCheck", (c) => console.log(c));
 
   socket()?.on("receiveMessage", (msg: IMessage) => {
-    console.log(msg);
-    setNewMessage(msg);
+    setNewMessage(msg.sender.handle, msg);
   });
 
   socket()?.on("contactRequestReceived", () => {
@@ -163,4 +183,8 @@ createEffect(() => {
 createEffect(() => {
   handle();
   authenticate();
+});
+
+createEffect(() => {
+  createEmptyConversation(currentConv());
 });
