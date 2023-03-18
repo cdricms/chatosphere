@@ -44,7 +44,6 @@ io.on("connection", (socket) => {
     });
   });
 
-  //TODO: Change all the relation stuff to a same name, be consistent
   socket.on(
     "sendContactRequest",
     async (myHandle: handle, contactHandle: handle) => {
@@ -82,10 +81,44 @@ io.on("connection", (socket) => {
         })
       );
 
+      socket.emit("sendContactRequestRes");
+
       //TODO: Send notification
-      if (clients.get(contactHandle)) {
-        socket.to(clients.get(contactHandle)!).emit("contactRequestReceived");
-      }
+      socket.to(clients.get(contactHandle)!).emit("contactRequestReceived");
+    }
+  );
+
+  socket.on(
+    "cancelContactRequest",
+    async (myHandle: handle, contactHandle: handle) => {
+      const exists = await prisma.user.findUnique({
+        where: { handle: contactHandle },
+        include: {
+          contacts: true,
+          contactRequestsSent: true,
+          contactRequestsReceived: true,
+        },
+      });
+      if (!exists) return;
+      if (
+        !exists.contactRequestsReceived.find(
+          (r) => r.contactHandle === contactHandle && r.userHandle === myHandle
+        )
+      )
+        return;
+      await prisma.user.update({
+        where: { handle: myHandle },
+        data: {
+          contactRequestsSent: {
+            delete: {
+              contactHandle_userHandle: { userHandle: myHandle, contactHandle },
+            },
+          },
+        },
+      });
+
+      socket.emit("cancelContactRequestRes");
+      socket.to(clients.get(contactHandle)!).emit("contactRequestCanceled");
     }
   );
 
@@ -101,10 +134,9 @@ io.on("connection", (socket) => {
         },
       });
       if (!exists) return;
-      if (exists.contacts.find((user) => user.handle === myHandle)) return;
       if (
-        !exists.contactRequestsReceived.find(
-          (r) => r.contactHandle === contactHandle && r.userHandle === myHandle
+        !exists.contactRequestsSent.find(
+          (r) => r.contactHandle === myHandle && r.userHandle === contactHandle
         )
       )
         return;
@@ -134,6 +166,9 @@ io.on("connection", (socket) => {
           },
         },
       });
+
+      socket.emit("acceptContactRequestRes");
+      socket.to(clients.get(contactHandle)!).emit("contactRequestAccepted");
     }
   );
 
@@ -170,6 +205,9 @@ io.on("connection", (socket) => {
           },
         },
       });
+
+      socket.emit("refuseContactRequestRes");
+      socket.to(clients.get(contactHandle)!).emit("contactRequestRefused");
     }
   );
 
@@ -192,6 +230,9 @@ io.on("connection", (socket) => {
         where: { handle: contactHandle },
         data: { contacts: { disconnect: { handle: myHandle } } },
       });
+
+      socket.emit("deleteContactRes");
+      socket.to(clients.get(contactHandle)!).emit("contactDeleted");
     }
   );
 
@@ -202,7 +243,7 @@ io.on("connection", (socket) => {
     });
     if (!userSelected) return;
 
-    return userSelected.contacts;
+    socket.emit("listContactsRes", userSelected.contacts);
   });
 
   socket.on("listRequestsReceived", async (myHandle: handle) => {

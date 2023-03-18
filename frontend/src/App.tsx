@@ -1,4 +1,4 @@
-import { Component, createSignal, For, onMount } from "solid-js";
+import { Component, createEffect, createSignal, For, onMount } from "solid-js";
 
 import {
   to,
@@ -9,27 +9,101 @@ import {
   contactRequestsReceived,
   listContactsRequestsSent,
   listContactRequestsReceived,
+  listContacts,
+  contacts,
+  cancelContactRequest,
+  acceptContactRequest,
+  refuseContactRequest,
+  deleteContact,
 } from "./store";
 
 import styles from "./App.module.css";
 import Content from "./Components/Content";
 import { Dynamic } from "solid-js/web";
+import Contact from "./Components/Contact";
 
-const Contacts = () => <div>Contacts</div>;
+const Contacts = () => {
+  onMount(() => {
+    listContacts();
+  });
+  return (
+    <For each={contacts()}>
+      {(c) => (
+        <Contact
+          onClick={() => {
+            setTo(c.handle);
+          }}
+          contact={c}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              deleteContact(c.handle);
+            }}
+          >
+            X
+          </button>
+        </Contact>
+      )}
+    </For>
+  );
+};
 const RequestsSent = () => {
   onMount(() => {
     listContactsRequestsSent();
   });
-  return <For each={contactRequestsSent()}>{(r) => <p>{r.handle}</p>}</For>;
+  return (
+    <For each={contactRequestsSent()}>
+      {(s) => (
+        <Contact contact={s}>
+          <>
+            <button
+              onClick={() => {
+                cancelContactRequest(s.handle);
+              }}
+            >
+              X
+            </button>
+          </>
+        </Contact>
+      )}
+    </For>
+  );
 };
 const RequestsReceived = () => {
   onMount(() => {
     listContactRequestsReceived();
   });
-  return <For each={contactRequestsReceived()}>{(r) => <p>{r.handle}</p>}</For>;
+  createEffect(() => {
+    contactRequestsReceived();
+  });
+  return (
+    <For each={contactRequestsReceived()}>
+      {(r) => (
+        <Contact contact={r}>
+          <button
+            type="button"
+            onClick={() => {
+              refuseContactRequest(r.handle);
+            }}
+          >
+            X
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              acceptContactRequest(r.handle);
+            }}
+          >
+            V
+          </button>
+        </Contact>
+      )}
+    </For>
+  );
 };
 
-const contacts = {
+const options = {
   contacts: Contacts,
   sent: RequestsSent,
   received: RequestsReceived,
@@ -43,11 +117,7 @@ const App: Component = () => {
   return (
     <main class={styles.main}>
       <section class={styles["contact-info"]}>
-        <input
-          type="text"
-          value={to()}
-          onInput={(e) => setTo(e.currentTarget.value)}
-        />
+        {contacts().find((c) => c.handle === to())?.nickname}
       </section>
       <section class={styles.contacts}>
         <div id="my-info">{nickname()}</div>
@@ -70,11 +140,11 @@ const App: Component = () => {
           value={tab()}
           onInput={(e) => setTab(e.currentTarget.value as unknown as any)}
         >
-          <For each={Object.keys(contacts)}>
+          <For each={Object.keys(options)}>
             {(c) => <option value={c}>{c}</option>}
           </For>
         </select>
-        <Dynamic component={contacts[tab()]} />
+        <Dynamic component={options[tab()]} />
       </section>
       <Content class={styles.content} />
     </main>

@@ -32,7 +32,6 @@ io.on("connection", (socket) => {
             },
         });
     });
-    //TODO: Change all the relation stuff to a same name, be consistent
     socket.on("sendContactRequest", async (myHandle, contactHandle) => {
         const exists = await prisma.user.findUnique({
             where: { handle: contactHandle },
@@ -57,10 +56,35 @@ io.on("connection", (socket) => {
             where: { handle: myHandle, AND: { handle: contactHandle } },
             include: { contactRequestsSent: true, contactRequestsReceived: true },
         }));
+        socket.emit("sendContactRequestRes");
         //TODO: Send notification
-        if (clients.get(contactHandle)) {
-            socket.to(clients.get(contactHandle)).emit("contactRequestReceived");
-        }
+        socket.to(clients.get(contactHandle)).emit("contactRequestReceived");
+    });
+    socket.on("cancelContactRequest", async (myHandle, contactHandle) => {
+        const exists = await prisma.user.findUnique({
+            where: { handle: contactHandle },
+            include: {
+                contacts: true,
+                contactRequestsSent: true,
+                contactRequestsReceived: true,
+            },
+        });
+        if (!exists)
+            return;
+        if (!exists.contactRequestsReceived.find((r) => r.contactHandle === contactHandle && r.userHandle === myHandle))
+            return;
+        await prisma.user.update({
+            where: { handle: myHandle },
+            data: {
+                contactRequestsSent: {
+                    delete: {
+                        contactHandle_userHandle: { userHandle: myHandle, contactHandle },
+                    },
+                },
+            },
+        });
+        socket.emit("cancelContactRequestRes");
+        socket.to(clients.get(contactHandle)).emit("contactRequestCanceled");
     });
     socket.on("acceptContactRequest", async (myHandle, contactHandle) => {
         const exists = await prisma.user.findUnique({
@@ -73,9 +97,7 @@ io.on("connection", (socket) => {
         });
         if (!exists)
             return;
-        if (exists.contacts.find((user) => user.handle === myHandle))
-            return;
-        if (!exists.contactRequestsReceived.find((r) => r.contactHandle === contactHandle && r.userHandle === myHandle))
+        if (!exists.contactRequestsSent.find((r) => r.contactHandle === myHandle && r.userHandle === contactHandle))
             return;
         await prisma.user.update({
             where: { handle: myHandle },
@@ -101,6 +123,8 @@ io.on("connection", (socket) => {
                 },
             },
         });
+        socket.emit("acceptContactRequestRes");
+        socket.to(clients.get(contactHandle)).emit("contactRequestAccepted");
     });
     socket.on("refuseContactRequest", async (myHandle, contactHandle) => {
         const exists = await prisma.user.findUnique({
@@ -130,6 +154,8 @@ io.on("connection", (socket) => {
                 },
             },
         });
+        socket.emit("refuseContactRequestRes");
+        socket.to(clients.get(contactHandle)).emit("contactRequestRefused");
     });
     socket.on("deleteContact", async (myHandle, contactHandle) => {
         const exists = await prisma.user.findUnique({
@@ -150,6 +176,8 @@ io.on("connection", (socket) => {
             where: { handle: contactHandle },
             data: { contacts: { disconnect: { handle: myHandle } } },
         });
+        socket.emit("deleteContactRes");
+        socket.to(clients.get(contactHandle)).emit("contactDeleted");
     });
     socket.on("listContacts", async (myHandle) => {
         const userSelected = await prisma.user.findUnique({
@@ -158,7 +186,7 @@ io.on("connection", (socket) => {
         });
         if (!userSelected)
             return;
-        return userSelected.contacts;
+        socket.emit("listContactsRes", userSelected.contacts);
     });
     socket.on("listRequestsReceived", async (myHandle) => {
         const userSelected = await prisma.user.findUnique({
