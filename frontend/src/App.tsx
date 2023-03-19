@@ -15,6 +15,7 @@ import {
   acceptContactRequest,
   refuseContactRequest,
   deleteContact,
+  handle,
 } from "./store";
 
 import styles from "./App.module.css";
@@ -49,25 +50,43 @@ const Contacts = () => {
   );
 };
 const RequestsSent = () => {
+  const [contact, setContact] = createSignal("");
   onMount(() => {
     listContactsRequestsSent();
   });
   return (
-    <For each={contactRequestsSent()}>
-      {(s) => (
-        <Contact contact={s}>
-          <>
-            <button
-              onClick={() => {
-                cancelContactRequest(s.handle);
-              }}
-            >
-              X
-            </button>
-          </>
-        </Contact>
-      )}
-    </For>
+    <>
+      <div class={styles.add_contact}>
+        <input
+          type="text"
+          value={contact()}
+          onInput={(e) => setContact(e.currentTarget.value)}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            addContact(contact());
+          }}
+        >
+          Add
+        </button>
+      </div>
+      <For each={contactRequestsSent()}>
+        {(s) => (
+          <Contact contact={s}>
+            <>
+              <button
+                onClick={() => {
+                  cancelContactRequest(s.handle);
+                }}
+              >
+                X
+              </button>
+            </>
+          </Contact>
+        )}
+      </For>
+    </>
   );
 };
 const RequestsReceived = () => {
@@ -110,7 +129,6 @@ const options = {
 };
 
 const App: Component = () => {
-  const [contact, setContact] = createSignal("");
   const [tab, setTab] = createSignal<"contacts" | "sent" | "received">(
     "contacts"
   );
@@ -120,33 +138,29 @@ const App: Component = () => {
         {contacts().find((c) => c.handle === to())?.nickname}
       </section>
       <section class={styles.contacts}>
-        <div id="my-info">{nickname()}</div>
-        <div>
-          <input
-            type="text"
-            value={contact()}
-            onInput={(e) => setContact(e.currentTarget.value)}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              addContact(contact());
-            }}
-          >
-            Add
-          </button>
-        </div>
-        <div>
-          <For each={Object.keys(options)}>
-            {(c) => (
-              <button
-                onClick={(e) => setTab(e.currentTarget.value as any)}
-                value={c}
-              >
-                {c}
-              </button>
-            )}
-          </For>
+        <div class={styles.my_info}>
+          <div id="my-info">
+            <Contact
+              style={{ "background-color": "inherit" }}
+              contact={{
+                handle: handle(),
+                nickname: nickname(),
+                profilPicture: "",
+              }}
+            />
+          </div>
+          <div class={styles.tabs}>
+            <For each={Object.keys(options)}>
+              {(c) => (
+                <button
+                  onClick={(e) => setTab(e.currentTarget.value as any)}
+                  value={c}
+                >
+                  {c}
+                </button>
+              )}
+            </For>
+          </div>
         </div>
         <Dynamic component={options[tab()]} />
       </section>

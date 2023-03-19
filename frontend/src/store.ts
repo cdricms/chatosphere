@@ -135,20 +135,21 @@ const setNewMessage = (to: string, msg: IMessage) => {
 };
 
 export const sendMessage = () => {
-  setNewMessage(to(), {
-    sender: { handle: handle(), nickname: nickname(), profilPicture: "" },
-    content: conversations()[currentConv()].currentMessage,
-    sent: Date.now(),
-    read: false,
-    delivered: false,
-    replies: [],
-    reactions: [],
-    to: to(),
-    messageID: createUniqueId(),
-  });
-  setCurrentMessage("");
-  socket()?.emit("sendMessage", conversations()[currentConv()].messages[0]);
-  console.log(currentConv());
+  if (contacts().find((u) => u.handle === to())) {
+    setNewMessage(to(), {
+      sender: { handle: handle(), nickname: nickname(), profilPicture: "" },
+      content: conversations()[currentConv()].currentMessage,
+      sent: Date.now(),
+      read: false,
+      delivered: false,
+      replies: [],
+      reactions: [],
+      to: to(),
+      messageID: createUniqueId(),
+    });
+    setCurrentMessage("");
+    socket()?.emit("sendMessage", conversations()[currentConv()].messages[0]);
+  }
 };
 
 createEffect(() => {
