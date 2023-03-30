@@ -1,7 +1,7 @@
 import { Component, JSX } from "solid-js";
 import { ISender } from "types/conversation";
 
-import styles from "./Contact.module.css";
+import styles from "./Contact.module.scss";
 
 const Contact: Component<
   { contact: ISender } & JSX.HTMLAttributes<HTMLDivElement>

@@ -6,7 +6,7 @@ import {
   setCurrentMessage,
 } from "../store";
 
-import styles from "./Content.module.css";
+import styles from "./Content.module.scss";
 import Message from "./Message";
 
 const Content: Component<{ class: string }> = ({ class: className }) => {

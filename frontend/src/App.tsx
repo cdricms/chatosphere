@@ -18,7 +18,7 @@ import {
   handle,
 } from "./store";
 
-import styles from "./App.module.css";
+import styles from "./App.module.scss";
 import Content from "./Components/Content";
 import { Dynamic } from "solid-js/web";
 import Contact from "./Components/Contact";
