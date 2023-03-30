@@ -10,25 +10,25 @@
 }
 
 .contact-info {
-  background: blue;
+  background: var(--primary-color-2);
   grid-area: nav;
 }
 
 .contacts {
-  background: green;
+  background: var(--primary-color-2);
   grid-area: cl;
   min-width: 20vw;
 }
 
 .content {
-  background: red;
+  background: var(--primary-color-1);
   grid-area: ct;
   display: flex;
   flex-direction: column;
 }
 
 .my_info {
-  background-color: var(--primary-color-1);
+  background-color: var(--primary-color-2);
   color: var(--second-color-1);
 }
 

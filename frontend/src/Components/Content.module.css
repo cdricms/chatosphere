@@ -10,7 +10,7 @@
 .input_box {
   display: flex;
   padding: 1em;
-  background-color: cyan;
+  background-color: var(--primary-color-2);
   gap: 1em;
 }
 

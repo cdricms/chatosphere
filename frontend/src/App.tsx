@@ -154,6 +154,7 @@ const App: Component = () => {
               {(c) => (
                 <button
                   onClick={(e) => setTab(e.currentTarget.value as any)}
+                  class={`tab ${tab() === c ? "active-tab" : ""}`}
                   value={c}
                 >
                   {c}
