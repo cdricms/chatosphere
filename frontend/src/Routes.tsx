@@ -30,7 +30,7 @@ const R = () => {
       navigate("/register");
     } else {
       setSocket(
-        io("", {
+        io(":8080", {
           transports: ["websocket"],
           reconnection: true,
         })

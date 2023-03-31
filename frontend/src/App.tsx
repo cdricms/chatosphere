@@ -28,25 +28,28 @@ const Contacts = () => {
     listContacts();
   });
   return (
-    <For each={contacts()}>
-      {(c) => (
-        <Contact
-          onClick={() => {
-            setTo(c.handle);
-          }}
-          contact={c}
-        >
-          <button
-            type="button"
+    <div class={styles.list_contact}>
+      <input type="text" placeholder="Search..." />
+      <For each={contacts()}>
+        {(c) => (
+          <Contact
             onClick={() => {
-              deleteContact(c.handle);
+              setTo(c.handle);
             }}
+            contact={c}
           >
-            X
-          </button>
-        </Contact>
-      )}
-    </For>
+            <button
+              type="button"
+              onClick={() => {
+                deleteContact(c.handle);
+              }}
+            >
+              X
+            </button>
+          </Contact>
+        )}
+      </For>
+    </div>
   );
 };
 const RequestsSent = () => {
@@ -55,7 +58,7 @@ const RequestsSent = () => {
     listContactsRequestsSent();
   });
   return (
-    <>
+    <div class={styles.list_contact}>
       <div class={styles.add_contact}>
         <input
           type="text"
@@ -86,10 +89,11 @@ const RequestsSent = () => {
           </Contact>
         )}
       </For>
-    </>
+    </div>
   );
 };
 const RequestsReceived = () => {
+  // const contacts = () => contactRequestsReceived().map(a => )
   onMount(() => {
     listContactRequestsReceived();
   });
@@ -97,28 +101,31 @@ const RequestsReceived = () => {
     contactRequestsReceived();
   });
   return (
-    <For each={contactRequestsReceived()}>
-      {(r) => (
-        <Contact contact={r}>
-          <button
-            type="button"
-            onClick={() => {
-              refuseContactRequest(r.handle);
-            }}
-          >
-            X
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              acceptContactRequest(r.handle);
-            }}
-          >
-            V
-          </button>
-        </Contact>
-      )}
-    </For>
+    <div class={styles.list_contact}>
+      <input type="text" placeholder="Search..." />
+      <For each={contactRequestsReceived()}>
+        {(r) => (
+          <Contact contact={r}>
+            <button
+              type="button"
+              onClick={() => {
+                refuseContactRequest(r.handle);
+              }}
+            >
+              X
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                acceptContactRequest(r.handle);
+              }}
+            >
+              V
+            </button>
+          </Contact>
+        )}
+      </For>
+    </div>
   );
 };
 

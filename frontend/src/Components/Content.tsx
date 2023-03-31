@@ -46,19 +46,26 @@ const Content: Component<{ class: string }> = ({ class: className }) => {
               setCurrentMessage(e.currentTarget.value);
               e.currentTarget.style.height = "auto";
               e.currentTarget.style.height =
-                e.currentTarget.scrollHeight + "px";
+                e.currentTarget.scrollHeight -
+                parseFloat(
+                  window.getComputedStyle(e.currentTarget).paddingTop
+                ) *
+                  2 +
+                "px";
             }}
           />
-          <button
-            class={styles.send_btn}
-            type="button"
-            onclick={() => {
-              sendMessage();
-              msgInputRef!.style.height = "auto";
-            }}
-          >
-            Send
-          </button>
+          <div class={styles.aside_buttons}>
+            <button
+              class={styles.send_btn}
+              type="button"
+              onclick={() => {
+                sendMessage();
+                msgInputRef!.style.height = "auto";
+              }}
+            >
+              🖅
+            </button>
+          </div>
         </div>
       </section>
     </Show>

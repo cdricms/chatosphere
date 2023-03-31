@@ -34,21 +34,32 @@
 
 .tabs {
   display: flex;
+  gap: .5em;
+  margin: .5em;
+
+  & > * {
+    flex: 1;
+    cursor: pointer;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
-.tabs > * {
-  flex: 1;
-  cursor: pointer;
-}
-
-.tabs > *:hover {
-  cursor: pointer;
-}
 
 .add_contact {
   display: flex;
+  gap: 1em;
+
+  &>input {
+  flex: 1;
+  }
 }
 
-.add_contact > input {
-  flex: 1;
+.list_contact {
+  display: flex;
+  flex-direction: column;
+  margin: 0 .5em 0 .5em;
+  gap: 1em;
 }

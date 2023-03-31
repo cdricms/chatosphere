@@ -22,11 +22,23 @@ code {
 
 button {
   padding: 1em;
-  background-color: var(--primary-color-2);
-  color: var(--second-color-2);
+  background-color: var(--primary-color-1);
+  color: var(--second-color-1);
   border: none;
+  cursor: pointer;
+  border-radius: 5pt;
+
+  &.active-tab {
+    background-color: var(--second-color-2);
+  }
+
 }
 
-button tab {
+input[type="text"], textarea {
   background-color: var(--primary-color-1);
+  color: var(--second-color-1);
+  border-radius: 5pt;
+  border: none;
+  padding: 1em;
 }
+
