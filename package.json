@@ -3,6 +3,7 @@
   "workspaces": [
     "backend",
     "frontend",
+    "crypt",
     "types"
   ],
   "version": "1.0.0",
